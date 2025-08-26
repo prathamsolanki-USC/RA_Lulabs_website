@@ -6,6 +6,6 @@ build:
       - pip install -r requirements.txt
 run:
   runtime-version: 3.11
-  command: gunicorn api_website.wsgi:application --bind 0.0.0.0:8000 --workers 1
+  command: python manage.py runserver 0.0.0.0:8000
   network:
     port: 8000
