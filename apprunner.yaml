@@ -3,12 +3,17 @@ runtime: python3
 build:
   commands:
     build:
-      - echo "Building Django application..."
+      - echo "Installing Python dependencies..."
+      - pip install --upgrade pip
       - pip install -r requirements.txt
+      - echo "Collecting static files..."
       - python manage.py collectstatic --noinput
+      - echo "Running database migrations..."
+      - python manage.py migrate --noinput
+      - echo "Build completed successfully!"
 run:
   runtime-version: 3.11
-  command: gunicorn api_website.wsgi:application --bind 0.0.0.0:8000 --workers 2
+  command: gunicorn api_website.wsgi:application --bind 0.0.0.0:8000 --workers 2 --timeout 120
   network:
     port: 8000
   env:
@@ -18,3 +23,5 @@ run:
       value: "False"
     - name: ALLOWED_HOSTS
       value: "*"
+    - name: PYTHONPATH
+      value: "/var/task"
