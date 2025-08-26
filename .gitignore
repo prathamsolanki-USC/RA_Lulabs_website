@@ -8,6 +8,12 @@ db.sqlite3
 db.sqlite3-journal
 media/
 
+# Lambda deployment
+lambda_package/
+*.zip
+.aws-sam/
+samconfig.toml
+
 # Environment variables
 .env
 .venv

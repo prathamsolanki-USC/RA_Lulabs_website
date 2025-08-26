@@ -1,0 +1,112 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: Genomic Data Query Interface - Lambda + API Gateway
+
+Globals:
+  Function:
+    Timeout: 30
+    MemorySize: 256
+    Runtime: python3.11
+    Environment:
+      Variables:
+        LOG_LEVEL: INFO
+
+Resources:
+  # Lambda Function
+  GenomicQueryFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: genomic-query-function
+      CodeUri: .
+      Handler: lambda_function.lambda_handler
+      Description: Lambda function for genomic data queries
+      Events:
+        ApiEvent:
+          Type: Api
+          Properties:
+            Path: /{proxy+}
+            Method: ANY
+      Policies:
+        - Statement:
+          - Effect: Allow
+            Action:
+              - logs:CreateLogGroup
+              - logs:CreateLogStream
+              - logs:PutLogEvents
+            Resource: '*'
+        - Statement:
+          - Effect: Allow
+            Action:
+              - s3:GetObject
+              - s3:PutObject
+              - s3:DeleteObject
+            Resource: 
+              - !Sub 'arn:aws:s3:::${GenomicDataBucket}/*'
+              - !Sub 'arn:aws:s3:::${GenomicDataBucket}'
+
+  # S3 Bucket for genomic data
+  GenomicDataBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub 'genomic-data-${AWS::AccountId}-${AWS::Region}'
+      VersioningConfiguration:
+        Status: Enabled
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+
+  # CloudWatch Log Group
+  GenomicQueryLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub '/aws/lambda/${GenomicQueryFunction}'
+      RetentionInDays: 14
+
+  # IAM Role for Lambda
+  GenomicQueryRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+      Policies:
+        - PolicyName: GenomicDataAccess
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - s3:GetObject
+                  - s3:PutObject
+                  - s3:DeleteObject
+                Resource: !Sub '${GenomicDataBucket}/*'
+
+Outputs:
+  # API Gateway URL
+  ApiUrl:
+    Description: "API Gateway endpoint URL"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/"
+    Export:
+      Name: !Sub "${AWS::StackName}-ApiUrl"
+
+  # Lambda Function ARN
+  LambdaFunctionArn:
+    Description: "Lambda Function ARN"
+    Value: !GetAtt GenomicQueryFunction.Arn
+    Export:
+      Name: !Sub "${AWS::StackName}-LambdaFunctionArn"
+
+  # S3 Bucket Name
+  GenomicDataBucketName:
+    Description: "S3 Bucket for genomic data"
+    Value: !Ref GenomicDataBucket
+    Export:
+      Name: !Sub "${AWS::StackName}-GenomicDataBucketName"
