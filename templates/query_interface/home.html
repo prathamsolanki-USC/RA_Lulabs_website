@@ -1,0 +1,175 @@
+{% extends 'base.html' %}
+
+{% block title %}Home - Genomic Data Query Interface{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section bg-gradient-primary text-white py-5 position-relative overflow-hidden">
+    <!-- Background Pattern -->
+    <div class="hero-bg-pattern"></div>
+    
+    <div class="container position-relative">
+        <div class="row align-items-center min-vh-75">
+            <div class="col-lg-6">
+                <h1 class="display-4 fw-bold mb-4">
+                    Advanced Genomic Data Query Interface
+                </h1>
+                <p class="lead mb-4">
+                    Discover, analyze, and download genomic datasets with our powerful query engine. 
+                    Built for researchers, scientists, and data analysts.
+                </p>
+                <div class="hero-buttons">
+                    <a href="{% url 'query_interface:query' %}" class="btn btn-light btn-lg me-3 mb-2">
+                        <i class="fas fa-search me-2"></i>Start Querying
+                    </a>
+                    <a href="{% url 'query_interface:documentation' %}" class="btn btn-outline-light btn-lg mb-2">
+                        <i class="fas fa-book me-2"></i>View Documentation
+                    </a>
+                </div>
+            </div>
+            <div class="col-lg-6 text-center">
+                <div class="hero-image">
+                    <i class="fas fa-dna fa-10x text-light opacity-75"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Floating Elements -->
+    <div class="floating-element floating-1">
+        <i class="fas fa-atom fa-2x text-light opacity-25"></i>
+    </div>
+    <div class="floating-element floating-2">
+        <i class="fas fa-microscope fa-2x text-light opacity-25"></i>
+    </div>
+    <div class="floating-element floating-3">
+        <i class="fas fa-flask fa-2x text-light opacity-25"></i>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="features-section py-5">
+    <div class="container">
+        <div class="row text-center mb-5">
+            <div class="col-12">
+                <h2 class="display-5 fw-bold text-dark mb-3">Why Choose Our Platform?</h2>
+                <p class="lead text-muted">Powerful features designed for modern genomic research</p>
+            </div>
+        </div>
+        
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="feature-card text-center p-4 h-100">
+                    <div class="feature-icon mb-3">
+                        <i class="fas fa-search fa-3x text-primary"></i>
+                    </div>
+                    <h4 class="fw-bold mb-3">Advanced Querying</h4>
+                    <p class="text-muted">
+                        Complex filtering with multiple criteria, comparison operators, and dynamic column selection.
+                    </p>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="feature-card text-center p-4 h-100">
+                    <div class="feature-icon mb-3">
+                        <i class="fas fa-download fa-3x text-success"></i>
+                    </div>
+                    <h4 class="fw-bold mb-3">Smart Downloads</h4>
+                    <p class="text-muted">
+                        Automatic file bundling, zip creation, and secure temporary download links.
+                    </p>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="feature-card text-center p-4 h-100">
+                    <div class="feature-icon mb-3">
+                        <i class="fas fa-cloud fa-3x text-info"></i>
+                    </div>
+                    <h4 class="fw-bold mb-3">Cloud Native</h4>
+                    <p class="text-muted">
+                        Built on AWS Lambda for scalability, reliability, and cost-effectiveness.
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Additional Genomic Features -->
+        <div class="row g-4 mt-4">
+            <div class="col-md-6">
+                <div class="feature-card text-center p-4 h-100">
+                    <div class="feature-icon mb-3">
+                        <i class="fas fa-dna fa-3x text-warning"></i>
+                    </div>
+                    <h4 class="fw-bold mb-3">Genomic Data Support</h4>
+                    <p class="text-muted">
+                        Specialized for RNA-seq, ChIP-seq, and other genomic data formats with metadata parsing.
+                    </p>
+                </div>
+            </div>
+            
+            <div class="col-md-6">
+                <div class="feature-card text-center p-4 h-100">
+                    <div class="feature-icon mb-3">
+                        <i class="fas fa-chart-line fa-3x text-danger"></i>
+                    </div>
+                    <h4 class="fw-bold mb-3">Data Analytics</h4>
+                    <p class="text-muted">
+                        Built-in analysis tools for genomic data visualization and statistical analysis.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Stats Section -->
+<section class="stats-section bg-light py-5">
+    <div class="container">
+        <div class="row text-center">
+            <div class="col-md-3 mb-4">
+                <div class="stat-item">
+                    <h3 class="display-6 fw-bold text-primary mb-2">1000+</h3>
+                    <p class="text-muted mb-0">Genomic Datasets</p>
+                </div>
+            </div>
+            <div class="col-md-3 mb-4">
+                <div class="stat-item">
+                    <h3 class="display-6 fw-bold text-success mb-2">99.9%</h3>
+                    <p class="text-muted mb-0">Uptime</p>
+                </div>
+            </div>
+            <div class="col-md-3 mb-4">
+                <div class="stat-item">
+                    <h3 class="display-6 fw-bold text-info mb-2">24/7</h3>
+                    <p class="text-muted mb-0">Availability</p>
+                </div>
+            </div>
+            <div class="col-md-3 mb-4">
+                <div class="stat-item">
+                    <h3 class="display-6 fw-bold text-warning mb-2">50+</h3>
+                    <p class="text-muted mb-0">Research Institutions</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="cta-section py-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8 text-center">
+                <h2 class="display-5 fw-bold text-dark mb-4">Ready to Get Started?</h2>
+                <p class="lead text-muted mb-4">
+                    Join thousands of researchers who trust our platform for their genomic data needs.
+                </p>
+                <a href="{% url 'query_interface:query' %}" class="btn btn-primary btn-lg">
+                    <i class="fas fa-rocket me-2"></i>Launch Query Interface
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,810 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Query Interface - Genomic Data Explorer{% endblock %}
+
+{% block extra_css %}
+<style>
+    .filter-group {
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 15px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    
+    .form-control, .form-select {
+        background: rgba(255, 255, 255, 0.95);
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        border-radius: 10px;
+        transition: all 0.3s ease;
+        color: #333;
+        font-size: 14px;
+        padding: 10px 15px;
+        height: auto;
+        min-height: 45px;
+    }
+    
+    .form-control:focus, .form-select:focus {
+        background: white;
+        border-color: rgba(255, 255, 255, 0.8);
+        box-shadow: 0 0 0 0.2rem rgba(255, 255, 255, 0.25);
+        outline: none;
+    }
+    
+    .form-label {
+        color: rgba(255, 255, 255, 0.9);
+        font-weight: 600;
+        margin-bottom: 8px;
+        display: block;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    }
+    
+    .btn-query {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        border-radius: 50px;
+        padding: 1rem 3rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        transition: all 0.3s ease;
+        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        color: white;
+    }
+    
+    .btn-query:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 12px 35px rgba(102, 126, 234, 0.4);
+        color: white;
+    }
+    
+    .btn-query:disabled {
+        opacity: 0.7;
+        transform: none;
+    }
+    
+    .form-check-input:checked {
+        background-color: #667eea;
+        border-color: #667eea;
+    }
+    
+    .form-check-input {
+        background-color: rgba(255, 255, 255, 0.8);
+        border-color: rgba(255, 255, 255, 0.5);
+    }
+    
+    .numeric-filter {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .numeric-filter .form-select {
+        flex: 0 0 80px;
+        min-width: 80px;
+    }
+    
+    .numeric-filter .form-control {
+        flex: 1;
+    }
+    
+    .form-check {
+        margin-bottom: 10px;
+    }
+    
+    .form-check-label {
+        color: rgba(255, 255, 255, 0.9);
+        font-weight: 500;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    }
+    
+    /* Ensure proper spacing */
+    .row {
+        margin-left: -10px;
+        margin-right: -10px;
+    }
+    
+    .col-md-3, .col-md-4, .col-md-6 {
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+    
+    /* Make sure the page background is visible */
+    body {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+    }
+    
+    /* Ensure text is readable */
+    .text-white {
+        color: white;
+    }
+    
+    .text-light {
+        color: rgba(255, 255, 255, 0.9);
+    }
+    
+    /* Add subtle glow to form elements */
+    .form-control:hover, .form-select:hover {
+        border-color: rgba(255, 255, 255, 0.6);
+        box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+    }
+    
+    /* Style the card */
+    .card {
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .card-header {
+        background: linear-gradient(135deg, rgba(102, 126, 234, 0.8) 0%, rgba(118, 75, 162, 0.8) 100%);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="text-center mb-5">
+                <h1 class="display-4 fw-bold text-white mb-3">
+                    <i class="fas fa-search me-3"></i>Genomic Data Query Interface
+                </h1>
+                <p class="lead text-light opacity-75">
+                    Build complex queries with advanced filters and download your genomic datasets
+                </p>
+            </div>
+
+            <!-- Query Form -->
+            <div class="card shadow-lg border-0">
+                <div class="card-header bg-gradient-primary text-white">
+                    <h3 class="mb-0">
+                        <i class="fas fa-filter me-2"></i>Build Your Query
+                    </h3>
+                </div>
+                <div class="card-body p-4">
+                    <form id="queryForm">
+                        <!-- AWS Credentials -->
+                        <div class="filter-group">
+                            <h4 class="mb-3">
+                                <i class="fas fa-key me-2"></i>AWS Credentials
+                            </h4>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <label for="accessKey" class="form-label">Access Key ID</label>
+                                    <input type="text" class="form-control" id="accessKey" name="access_key" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="secretKey" class="form-label">Secret Access Key</label>
+                                    <input type="password" class="form-control" id="secretKey" name="secret_key" required>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Query Filters -->
+                        <div class="filter-group">
+                            <h4 class="mb-3">
+                                <i class="fas fa-filter me-2"></i>Query Filters
+                            </h4>
+                            
+                            <!-- Basic Filters -->
+                            <div class="row mb-3">
+                                <div class="col-md-4">
+                                    <label for="species" class="form-label">Species</label>
+                                    <select class="form-select" id="species" name="species">
+                                        <option value="">Select Species</option>
+                                        <option value="HS">HS (Human)</option>
+                                        <option value="MM">MM (Mouse)</option>
+                                        <option value="DM">DM (Drosophila)</option>
+                                        <option value="SC">SC (S. cerevisiae)</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="cellType" class="form-label">Cell Type</label>
+                                    <select class="form-select" id="cellType" name="cell_type">
+                                        <option value="">Select Cell Type</option>
+                                        <option value="HeLa">HeLa</option>
+                                        <option value="MEF">MEF</option>
+                                        <option value="K562">K562</option>
+                                        <option value="Jurkat">Jurkat</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="crosslinker" class="form-label">Crosslinker</label>
+                                    <select class="form-select" id="crosslinker" name="crosslinker">
+                                        <option value="">Select Crosslinker</option>
+                                        <option value="DPI">DPI</option>
+                                        <option value="FA">FA (Formaldehyde)</option>
+                                        <option value="DSG">DSG</option>
+                                        <option value="DSS">DSS</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- Numeric Filters -->
+                            <div class="row mb-3">
+                                <div class="col-md-4">
+                                    <label for="litigationTime" class="form-label">Ligation Time</label>
+                                    <div class="numeric-filter">
+                                        <select class="form-select" name="litigation_time_op">
+                                            <option value="=">=</option>
+                                            <option value="<"><</option>
+                                            <option value=">">></option>
+                                            <option value="<="><=</option>
+                                            <option value=">=">>=</option>
+                                        </select>
+                                        <input type="number" class="form-control" name="litigation_time" placeholder="e.g., 12.5" step="0.1">
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="ligationIncubationTime" class="form-label">Ligation Incubation Time</label>
+                                    <div class="numeric-filter">
+                                        <select class="form-select" name="ligation_incubation_time_op">
+                                            <option value="=">=</option>
+                                            <option value="<"><</option>
+                                            <option value=">">></option>
+                                            <option value="<="><=</option>
+                                            <option value=">=">>=</option>
+                                        </select>
+                                        <input type="number" class="form-control" name="ligation_incubation_time" placeholder="e.g., 24">
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="exoTime" class="form-label">Exo Time</label>
+                                    <div class="numeric-filter">
+                                        <select class="form-select" name="exo_time_op">
+                                            <option value="=">=</option>
+                                            <option value="<"><</option>
+                                            <option value=">">></option>
+                                            <option value="<="><=</option>
+                                            <option value=">=">>=</option>
+                                        </select>
+                                        <input type="number" class="form-control" name="exo_time" placeholder="e.g., 12">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Additional Filters -->
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <label for="ligase" class="form-label">Ligase</label>
+                                    <select class="form-select" id="ligase" name="ligase">
+                                        <option value="">Select Ligase</option>
+                                        <option value="T4">T4 DNA Ligase</option>
+                                        <option value="T7">T7 DNA Ligase</option>
+                                        <option value="E. coli">E. coli DNA Ligase</option>
+                                        <option value="Thermus">Thermus DNA Ligase</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="extra" class="form-label">Extra</label>
+                                    <select class="form-select" id="extra" name="extra">
+                                        <option value="">Select Extra</option>
+                                        <option value="NOrRNA">NOrRNA</option>
+                                        <option value="">None</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- File Selection -->
+                        <div class="filter-group">
+                            <h4 class="mb-3">
+                                <i class="fas fa-file me-2"></i>Files Required
+                            </h4>
+                            <div class="row">
+                                <div class="col-md-3 mb-2">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" value="pri_crssant" id="priCrssant" name="files_required">
+                                        <label class="form-check-label" for="priCrssant">Pri Crssant</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 mb-2">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" value="prigap1" id="prigap1" name="files_required">
+                                        <label class="form-check-label" for="prigap1">Prigap1</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 mb-2">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" value="prigap1_filtered" id="prigap1Filtered" name="files_required">
+                                        <label class="form-check-label" for="prigap1Filtered">Prigap1 Filtered</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 mb-2">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" value="prigapm" id="prigapm" name="files_required">
+                                        <label class="form-check-label" for="prigapm">Prigapm</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 mb-2">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" value="prigapm_filtered" id="prigapmFiltered" name="files_required">
+                                        <label class="form-check-label" for="prigapmFiltered">Prigapm Filtered</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 mb-2">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" value="prihomo" id="prihomo" name="files_required">
+                                        <label class="form-check-label" for="prihomo">Prihomo</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 mb-2">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" value="pritrans" id="pritrans" name="files_required">
+                                        <label class="form-check-label" for="pritrans">Pritrans</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 mb-2">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" value="gaplen" id="gaplen" name="files_required">
+                                        <label class="form-check-label" for="gaplen">Gap Length</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 mb-2">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" value="seglen" id="seglen" name="files_required">
+                                        <label class="form-check-label" for="seglen">Segment Length</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 mb-2">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" value="fastqc" id="fastqc" name="files_required">
+                                        <label class="form-check-label" for="fastqc">FastQC Report</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Query Options -->
+                        <div class="filter-group">
+                            <h4 class="mb-3">
+                                <i class="fas fa-cog me-2"></i>Query Options
+                            </h4>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <label for="limit" class="form-label">Result Limit</label>
+                                    <input type="number" class="form-control" id="limit" name="limit" 
+                                           value="100" min="1" max="10000">
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="includeDownload" class="form-label">Include Download</label>
+                                    <select class="form-select" id="includeDownload" name="include_download">
+                                        <option value="true">Yes</option>
+                                        <option value="false">No</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-query btn-lg" id="submitBtn">
+                                <i class="fas fa-search me-2"></i>Execute Query
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Loading Section -->
+            <div class="loading-section text-center py-5" id="loadingSection" style="display: none;">
+                <div class="card shadow-lg">
+                    <div class="card-header bg-primary text-white">
+                        <h4 class="mb-0">
+                            <i class="fas fa-spinner fa-spin me-2"></i>Processing Your Query
+                        </h4>
+                    </div>
+                    <div class="card-body py-5">
+                        <div class="loading-animation mb-4">
+                            <div class="spinner-border text-white" role="status" style="width: 4rem; height: 4rem;">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                        </div>
+                        <h5 class="text-white mb-3">Please wait while we process your query...</h5>
+                        <p class="text-light mb-4">We're analyzing your filters and preparing your genomic data files</p>
+                        
+                        <!-- Progress Steps -->
+                        <div class="progress-steps mb-4">
+                            <div class="step active" id="step1">
+                                <div class="step-icon">
+                                    <i class="fas fa-search"></i>
+                                </div>
+                                <div class="step-label">Querying Database</div>
+                            </div>
+                            <div class="step" id="step2">
+                                <div class="step-icon">
+                                    <i class="fas fa-file-alt"></i>
+                                </div>
+                                <div class="step-label">Processing Files</div>
+                            </div>
+                            <div class="step" id="step3">
+                                <div class="step-icon">
+                                    <i class="fas fa-download"></i>
+                                </div>
+                                <div class="step-label">Preparing Download</div>
+                            </div>
+                        </div>
+                        
+                        <!-- Progress Bar -->
+                        <div class="progress" style="height: 10px;">
+                            <div class="progress-bar progress-bar-striped progress-bar-animated bg-white" 
+                                 role="progressbar" style="width: 0%" id="progressBar"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Results Section -->
+            <div class="results-section mt-5" id="resultsSection" style="display: none;">
+                <div class="card shadow-lg">
+                    <div class="card-header bg-success text-white">
+                        <h4 class="mb-0">
+                            <i class="fas fa-check-circle me-2"></i>Query Results
+                        </h4>
+                    </div>
+                    <div class="card-body">
+                        <div id="resultsContent"></div>
+                        
+                        <!-- Download Section -->
+                        <div id="downloadSection" class="mt-4" style="display: none;">
+                            <!-- Success Banner -->
+                            <div class="alert alert-success border-0 mb-3 text-center">
+                                <h5 class="mb-2">
+                                    <i class="fas fa-check-circle me-2"></i>Download Ready!
+                                </h5>
+                                <p class="mb-0">Your genomic data files have been processed successfully and are ready for download.</p>
+                            </div>
+                            
+                            <div class="card border-success bg-light">
+                                <div class="card-header bg-success text-white">
+                                    <h5 class="mb-0">
+                                        <i class="fas fa-download me-2"></i>Download Your Files
+                                    </h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row align-items-center">
+                                        <div class="col-md-8">
+                                            <h6 class="text-success mb-2">
+                                                <i class="fas fa-check-circle me-2"></i>Your files are ready!
+                                            </h6>
+                                            <p class="text-muted mb-2">
+                                                <i class="fas fa-info-circle me-1"></i>
+                                                <span id="downloadInfo">Click the download button below to get your genomic data files</span>
+                                            </p>
+                                            <div class="download-details">
+                                                <small class="text-muted">
+                                                    <i class="fas fa-clock me-1"></i>
+                                                    <span id="downloadExpiry">Link expires in 24 hours</span>
+                                                </small>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4 text-center">
+                                            <a id="downloadButton" href="#" class="btn btn-success btn-lg" target="_blank">
+                                                <i class="fas fa-download me-2"></i>Download Files
+                                            </a>
+                                            <div class="mt-2">
+                                                <small class="text-muted">
+                                                    <i class="fas fa-file-archive me-1"></i>
+                                                    <span id="downloadSize">ZIP file</span>
+                                                </small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+$(document).ready(function() {
+    console.log('=== NEW QUERY FORM SCRIPT LOADED ===');
+    
+    // Simple form submission handler
+    $('#queryForm').submit(function(e) {
+        e.preventDefault();
+        console.log('=== FORM SUBMISSION STARTED ===');
+        
+        // Show loading
+        $('#loadingSection').show();
+        $('#resultsSection').hide();
+        $('#downloadSection').hide();
+        
+        // Collect form data
+        const formData = {
+            species: $('#species').val(),
+            cell_type: $('#cellType').val(),
+            crosslinker: $('#crosslinker').val(),
+            ligase: $('#ligase').val(),
+            exo_time: {
+                operator: $('select[name="exo_time_op"]').val() || '=',
+                value: parseFloat($('input[name="exo_time"]').val()) || 0
+            },
+            litigation_time: {
+                operator: $('select[name="litigation_time_op"]').val() || '=',
+                value: parseFloat($('input[name="litigation_time"]').val()) || 0
+            },
+            ligation_incubation_time: {
+                operator: $('select[name="ligation_incubation_time_op"]').val() || '=',
+                value: parseFloat($('input[name="ligation_incubation_time"]').val()) || 0
+            }
+        };
+        
+        // Collect selected files
+        const filesRequired = [];
+        $('input[name="files_required"]:checked').each(function() {
+            filesRequired.push($(this).val());
+        });
+        
+        // Validate files selection
+        if (filesRequired.length === 0) {
+            alert('Please select at least one file type to download.');
+            return false;
+        }
+        
+        // Remove empty selections
+        Object.keys(formData).forEach(key => {
+            if (formData[key] && typeof formData[key] === 'object' && 
+                formData[key].operator && formData[key].value === 0) {
+                delete formData[key];
+            } else if (formData[key] === '' || formData[key] === null) {
+                delete formData[key];
+            }
+        });
+        
+        const payload = {
+            selections: formData,
+            files_required: filesRequired,
+            limit: parseInt($('#limit').val()) || 100,
+            include_download: $('#includeDownload').val() === 'true',
+            access_key: $('#accessKey').val(),
+            secret_key: $('#secretKey').val()
+        };
+        
+        console.log('=== COLLECTED FORM DATA ===');
+        console.log(payload);
+        
+        // Validate required fields
+        if (filesRequired.length === 0) {
+            alert('Please select at least one file type to download.');
+            $('#loadingSection').hide();
+            return false;
+        }
+        
+        // Make API call
+        console.log('=== MAKING API CALL ===');
+        $.ajax({
+            url: '/api/query/',
+            method: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify(payload),
+            success: function(response) {
+                console.log('=== API SUCCESS ===');
+                console.log(response);
+                $('#loadingSection').hide();
+                showResults(response);
+            },
+            error: function(xhr, status, error) {
+                console.error('=== API ERROR ===');
+                console.error('Status:', status);
+                console.error('Error:', error);
+                console.error('Response:', xhr.responseText);
+                
+                $('#loadingSection').hide();
+                alert('API Error: ' + (xhr.responseJSON?.error || error || 'Unknown error'));
+            }
+        });
+        
+        return false;
+    });
+    
+    // Also add click handler to submit button as backup
+    $('#submitBtn').click(function(e) {
+        console.log('=== SUBMIT BUTTON CLICKED ===');
+        e.preventDefault();
+        
+        // Trigger form submission manually
+        $('#queryForm').submit();
+    });
+    
+    // Function to show results
+    function showResults(response) {
+        console.log('=== SHOWING RESULTS ===');
+        console.log('Response received:', response);
+        
+        // Generate a query ID if the API doesn't provide one
+        const queryId = response.query_id || `query_${Date.now()}`;
+        
+        let html = '';
+        
+        if (response.success) {
+            // Success message
+            html += `
+                <div class="alert alert-success">
+                    <h5><i class="fas fa-check-circle me-2"></i>Query Successful!</h5>
+                    <p class="mb-0">Query ID: ${queryId}</p>
+                </div>
+            `;
+            
+            // Query info
+            html += `
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <h6>Query Statistics</h6>
+                        <ul class="list-unstyled">
+                            <li><strong>Shape:</strong> ${response.shape ? response.shape.join(', ') : 'N/A'}</li>
+                            <li><strong>Total Files:</strong> ${response.total_files || response.data ? response.data.length : 0}</li>
+                            <li><strong>Successful Files:</strong> ${response.successful_files || response.data ? response.data.length : 0}</li>
+                            <li><strong>Failed Files:</strong> ${response.failed_files ? response.failed_files.length : 0}</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <h6>Query Information</h6>
+                        <ul class="list-unstyled">
+                            <li><strong>Size:</strong> ${response.size_mb ? response.size_mb + ' MB' : 'N/A'}</li>
+                            <li><strong>Files Selected:</strong> ${response.files_required ? response.files_required.length : (response.data && response.data.length > 0 ? Object.keys(response.data[0]).length : 0)}</li>
+                            <li><strong>Query ID:</strong> ${queryId}</li>
+                            <li><strong>Status:</strong> <span class="badge bg-success">Success</span></li>
+                        </ul>
+                    </div>
+                </div>
+            `;
+            
+            // Create table with actual column names
+            if (response.data && response.data.length > 0) {
+                const firstRow = response.data[0];
+                const columnNames = response.files_required || [];
+                
+                // If files_required is empty, generate column names from data
+                let displayColumnNames = columnNames;
+                if (columnNames.length === 0) {
+                    displayColumnNames = Object.keys(firstRow).map((key, index) => {
+                        // Extract file type from the first file path
+                        const firstFilePath = firstRow[key];
+                        if (firstFilePath) {
+                            const fileName = firstFilePath.split('/').pop() || '';
+                            // Extract file type from filename (e.g., "pri_crssant.bam" -> "pri_crssant")
+                            const fileType = fileName.split('_').pop()?.split('.')[0] || `Column ${index + 1}`;
+                            return fileType.charAt(0).toUpperCase() + fileType.slice(1);
+                        }
+                        return `Column ${index + 1}`;
+                    });
+                }
+                
+                html += `
+                    <div class="mt-4">
+                        <h6>Query Results</h6>
+                        <div class="table-responsive">
+                            <table class="table table-striped table-hover">
+                                <thead class="table-dark">
+                                    <tr>
+                                        ${displayColumnNames.map((colName, index) => 
+                                            `<th>${colName}</th>`
+                                        ).join('')}
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${response.data.map((row, rowIndex) => `
+                                        <tr>
+                                            ${Object.keys(row).map((colKey, colIndex) => {
+                                                const filePath = row[colKey] || '';
+                                                const fileName = filePath.split('/').pop() || '';
+                                                return `<td title="${filePath}">${fileName}</td>`;
+                                            }).join('')}
+                                        </tr>
+                                    `).join('')}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            // SQL query
+            if (response.sql_query) {
+                html += `
+                    <div class="mt-4">
+                        <h6>Generated SQL Query</h6>
+                        <div class="bg-light p-3 rounded">
+                            <code>${response.sql_query}</code>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            // Request and Response JSON
+            html += `
+                <div class="row mt-4">
+                    <div class="col-md-6">
+                        <h6>Request JSON</h6>
+                        <div class="bg-light p-3 rounded">
+                            <pre class="mb-0"><code>${JSON.stringify({
+                                path: '/api/query',
+                                selections: response.selections || {},
+                                files_required: response.files_required || [],
+                                limit: response.limit || 100,
+                                include_download: response.include_download || false
+                            }, null, 2)}</code></pre>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <h6>Response JSON</h6>
+                        <div class="bg-light p-3 rounded">
+                            <pre class="mb-0"><code>${JSON.stringify(response, null, 2)}</code></pre>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // Download section
+            if (response.download_url) {
+                html += `
+                    <div class="mt-4">
+                        <div class="alert alert-success">
+                            <h5><i class="fas fa-download me-2"></i>Download Ready!</h5>
+                            <p>Your files are ready for download.</p>
+                        </div>
+                        <div class="text-center">
+                            <a href="${response.download_url}" class="btn btn-success btn-lg" target="_blank">
+                                <i class="fas fa-download me-2"></i>Download Files
+                            </a>
+                            <p class="text-muted mt-2">
+                                <small>Link expires: ${response.expires_at || '24 hours'}</small>
+                            </p>
+                        </div>
+                    </div>
+                `;
+            }
+        } else {
+            // Error message
+            html += `
+                <div class="alert alert-danger">
+                    <h5><i class="fas fa-exclamation-triangle me-2"></i>Query Failed</h5>
+                    <p class="mb-0">${response.error || 'Unknown error occurred'}</p>
+                </div>
+            `;
+        }
+        
+        console.log('=== GENERATED HTML ===');
+        console.log('HTML length:', html.length);
+        console.log('HTML preview:', html.substring(0, 200) + '...');
+        
+        console.log('=== UPDATING PAGE ===');
+        console.log('Results content element:', $('#resultsContent').length);
+        console.log('Results section element:', $('#resultsSection').length);
+        
+        $('#resultsContent').html(html);
+        $('#resultsSection').show();
+        
+        console.log('=== RESULTS DISPLAYED ===');
+        console.log('Final HTML in resultsContent:', $('#resultsContent').html().substring(0, 200) + '...');
+    }
+    
+    // Progress animation
+    function startProgress() {
+        let progress = 0;
+        const progressBar = $('#progressBar');
+        const interval = setInterval(() => {
+            progress += 2;
+            progressBar.css('width', progress + '%');
+            if (progress >= 100) {
+                clearInterval(interval);
+            }
+        }, 100);
+    }
+    
+    console.log('=== SCRIPT SETUP COMPLETE ===');
+});
+</script>
+{% endblock %}

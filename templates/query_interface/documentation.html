@@ -1,0 +1,632 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}API Documentation - Genomic Data Interface{% endblock %}
+
+{% block extra_css %}
+<style>
+    .doc-section {
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        border-radius: 15px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+    }
+    
+    .api-endpoint {
+        background: #1e40af;
+        color: white;
+        border-radius: 10px;
+        padding: 1.5rem;
+        margin-bottom: 1rem;
+        font-family: 'Courier New', monospace;
+    }
+    
+    .code-block {
+        background: #f8f9fa;
+        border: 1px solid #e9ecef;
+        border-radius: 8px;
+        padding: 1rem;
+        font-family: 'Courier New', monospace;
+        overflow-x: auto;
+        color: #6b7280;
+    }
+    
+    .nav-pills .nav-link {
+        border-radius: 20px;
+        margin-right: 0.5rem;
+        margin-bottom: 0.5rem;
+        color: #1e40af;
+        text-decoration: none;
+        padding: 0.75rem 1.5rem;
+        transition: all 0.3s ease;
+    }
+    
+    .nav-pills .nav-link:hover {
+        background: #e5e7eb;
+        color: #1e40af;
+    }
+    
+    .nav-pills .nav-link.active {
+        background: linear-gradient(45deg, #1e40af, #3730a3);
+        color: white;
+        border-radius: 20px 0 0 20px;
+    }
+    
+    .feature-card {
+        background: white;
+        border-radius: 15px;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        transition: transform 0.3s ease;
+    }
+    
+    .feature-card:hover {
+        transform: translateY(-5px);
+    }
+    
+    .sidebar-card {
+        border: none;
+        border-radius: 15px;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+    }
+    
+    .sidebar-header {
+        background: #1e40af;  /* Solid blue instead of gradient */
+        color: white;
+        padding: 1.5rem;
+        border: none;
+    }
+    
+    .sidebar-body {
+        padding: 0;
+    }
+    
+    .nav-item {
+        border-bottom: 1px solid #f3f4f6;
+    }
+    
+    .nav-item:last-child {
+        border-bottom: none;
+    }
+    
+    .nav-link {
+        padding: 1rem 1.5rem;
+        color: #1e40af;
+        transition: all 0.3s ease;
+    }
+    
+    .nav-link:hover {
+        background: #f9fafb;
+        color: #1e40af;
+    }
+    
+    .nav-link.active {
+        background: transparent;  /* No background for active items */
+        color: #1e40af;  /* Blue text for active items */
+        border-radius: 0;
+        font-weight: 600;
+    }
+    
+    .api-reference h2 {
+        color: #1e40af;
+        font-weight: bold;
+    }
+    
+    .json-example {
+        background: #f8f9fa;
+        border: 1px solid #e9ecef;
+        border-radius: 8px;
+        padding: 1.5rem;
+        font-family: 'Courier New', monospace;
+        overflow-x: auto;
+        color: #6b7280;
+        line-height: 1.6;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-lg-3">
+            <!-- Sidebar Navigation -->
+            <div class="position-sticky" style="top: 2rem;">
+                <div class="card sidebar-card">
+                    <div class="card-header sidebar-header">
+                        <h5 class="mb-0"><i class="fas fa-bars me-2"></i>Documentation</h5>
+                    </div>
+                    <div class="card-body sidebar-body p-0">
+                        <nav class="nav flex-column">
+                            <div class="nav-item">
+                                <a class="nav-link active" href="#overview">Overview</a>
+                            </div>
+                            <div class="nav-item">
+                                <a class="nav-link" href="#features">Features</a>
+                            </div>
+                            <div class="nav-item">
+                                <a class="nav-link" href="#api-reference">API Reference</a>
+                            </div>
+                            <div class="nav-item">
+                                <a class="nav-link" href="#examples">Examples</a>
+                            </div>
+                            <div class="nav-item">
+                                <a class="nav-link" href="#deployment">Deployment</a>
+                            </div>
+                            <div class="nav-item">
+                                <a class="nav-link" href="#troubleshooting">Troubleshooting</a>
+                            </div>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-9">
+            <!-- Overview Section -->
+            <section id="overview" class="doc-section">
+                <h2 class="display-5 fw-bold text-dark mb-4">
+                    <i class="fas fa-info-circle me-3"></i>Overview
+                </h2>
+                <p class="lead text-dark">
+                    The Genomic Data Query Interface is a powerful web application that provides researchers and scientists 
+                    with an intuitive way to query genomic datasets stored in AWS S3 using AWS Athena.
+                </p>
+                
+                <div class="row mt-4">
+                    <div class="col-md-6">
+                        <h5><i class="fas fa-database me-2"></i>Data Source</h5>
+                        <p>Genomic datasets stored in AWS S3, queryable through AWS Athena with a structured metadata schema.</p>
+                    </div>
+                    <div class="col-md-6">
+                        <h5><i class="fas fa-cloud me-2"></i>Architecture</h5>
+                        <p>Built on Django with AWS Lambda integration, providing scalability and cost-effectiveness.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Features Section -->
+            <section id="features" class="doc-section">
+                <h2 class="display-5 fw-bold text-dark mb-4">
+                    <i class="fas fa-star me-3"></i>Key Features
+                </h2>
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="feature-card">
+                            <div class="d-flex align-items-center mb-3">
+                                <i class="fas fa-search fa-2x text-primary me-3"></i>
+                                <h5 class="mb-0">Advanced Querying</h5>
+                            </div>
+                            <ul class="list-unstyled mb-0">
+                                <li><i class="fas fa-check text-success me-2"></i>Multiple filter criteria</li>
+                                <li><i class="fas fa-check text-success me-2"></i>Comparison operators</li>
+                                <li><i class="fas fa-check text-success me-2"></i>Dynamic column selection</li>
+                                <li><i class="fas fa-check text-success me-2"></i>Result limiting</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="feature-card">
+                            <div class="d-flex align-items-center mb-3">
+                                <i class="fas fa-download fa-2x text-success me-3"></i>
+                                <h5 class="mb-0">Smart Downloads</h5>
+                            </div>
+                            <ul class="list-unstyled mb-0">
+                                <li><i class="fas fa-check text-success me-2"></i>Automatic file bundling</li>
+                                <li><i class="fas fa-check text-success me-2"></i>Zip file creation</li>
+                                <li><i class="fas fa-check text-success me-2"></i>Temporary download links</li>
+                                <li><i class="fas fa-check text-success me-2"></i>Secure access control</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="feature-card">
+                            <div class="d-flex align-items-center mb-3">
+                                <i class="fas fa-shield-alt fa-2x text-warning me-3"></i>
+                                <h5 class="mb-0">Security</h5>
+                            </div>
+                            <ul class="list-unstyled mb-0">
+                                <li><i class="fas fa-check text-success me-2"></i>AWS IAM integration</li>
+                                <li><i class="fas fa-check text-success me-2"></i>Credential validation</li>
+                                <li><i class="fas fa-check text-success me-2"></i>Secure file access</li>
+                                <li><i class="fas fa-check text-success me-2"></i>Audit logging</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="feature-card">
+                            <div class="d-flex align-items-center mb-3">
+                                <i class="fas fa-mobile-alt fa-2x text-info me-3"></i>
+                                <h5 class="mb-0">User Experience</h5>
+                            </div>
+                            <ul class="list-unstyled mb-0">
+                                <li><i class="fas fa-check text-success me-2"></i>Responsive design</li>
+                                <li><i class="fas fa-check text-success me-2"></i>Interactive forms</li>
+                                <li><i class="fas fa-check text-success me-2"></i>Real-time validation</li>
+                                <li><i class="fas fa-check text-success me-2"></i>Professional UI</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- API Reference Section -->
+            <section id="api-reference" class="doc-section api-reference">
+                <h2 class="display-5 fw-bold mb-4">
+                    <i class="fas fa-code me-3"></i>API Reference
+                </h2>
+                
+                <div class="api-endpoint">
+                    <h5 class="mb-3">POST /api/query</h5>
+                    <p class="mb-2">Execute a genomic data query with filters and file selection.</p>
+                    
+                    <h6>Request Body:</h6>
+                    <div class="bg-light p-3 rounded">
+                        <pre class="mb-0 text-dark"><code>{
+  "path": "/api/query",
+  "access_key": "YOUR_ACCESS_KEY",
+  "secret_key": "YOUR_SECRET_KEY",
+  "selections": {
+    "species": "HS",
+    "cell_type": "HeLa",
+    "crosslinker": "DPI",
+    "litigation_time": {
+      "operator": "<",
+      "value": 15
+    },
+    "exo_time": {
+      "operator": ">=",
+      "value": 12
+    }
+  },
+  "files_required": ["pri_crssant", "seglen"],
+  "limit": 1,
+  "include_download": true
+}</code></pre>
+                    </div>
+                    
+                    <h6>Response:</h6>
+                    <div class="bg-light p-3 rounded">
+                        <pre class="mb-0 text-dark"><code>{
+  "success": true,
+  "valid_query": true,
+  "data": [
+    {
+      "col_0": "usc-genomics-cris-data/methods/sharc/SHARC-exo/HS-HeLa_DPI-12.5_T4-24h_exo-12h/HS-HeLa_DPI-12.5_T4-24h_exo-12h_pri_crssant.bam",
+      "col_1": "usc-genomics-cris-data/methods/sharc/SHARC-exo/HS-HeLa_DPI-12.5_T4-24h_exo-12h/HS-HeLa_DPI-12.5_T4-24h_exo-12h_seglen.pdf"
+    }
+  ],
+  "shape": [1, 2],
+  "sql_query": "SELECT pri_crssant, seglen FROM cris_database.cris_table WHERE species = 'HS' AND litigation_time < 15 AND exo_time >= 12 LIMIT 1",
+  "download_url": "https://usc-genomics-cris-data.s3.amazonaws.com/temp_downloads/download_1756100376.zip?...",
+  "expires_at": "2025-08-25 06:40:09 UTC",
+  "total_files": 2,
+  "successful_files": 2,
+  "failed_files": [],
+  "size_mb": 36.96
+}</code></pre>
+                    </div>
+                </div>
+                
+                <h5 class="mt-4 mb-3">Available Filters:</h5>
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Filter</th>
+                                <th>Type</th>
+                                <th>Description</th>
+                                <th>Allowed Values</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><code>species</code></td>
+                                <td>String</td>
+                                <td>Species identifier</td>
+                                <td>"HS", "MM", "VIR", "IV"</td>
+                            </tr>
+                            <tr>
+                                <td><code>cell_type</code></td>
+                                <td>String</td>
+                                <td>Cell type</td>
+                                <td>"HeLa", "MEF", "NIH3T3", "HEK293T"</td>
+                            </tr>
+                            <tr>
+                                <td><code>crosslinker</code></td>
+                                <td>String</td>
+                                <td>Crosslinker type</td>
+                                <td>"DPI", "DSG", "DSS", "BS3"</td>
+                            </tr>
+                            <tr>
+                                <td><code>ligase</code></td>
+                                <td>String</td>
+                                <td>Ligase type</td>
+                                <td>"T4", "T7", "E. coli"</td>
+                            </tr>
+                            <tr>
+                                <td><code>litigation_time</code></td>
+                                <td>Numeric</td>
+                                <td>Litigation time with operators</td>
+                                <td>{"operator": "<", "value": 15}</td>
+                            </tr>
+                            <tr>
+                                <td><code>ligation_incubation_time</code></td>
+                                <td>Numeric</td>
+                                <td>Ligation incubation time with operators</td>
+                                <td>{"operator": "=", "value": 24}</td>
+                            </tr>
+                            <tr>
+                                <td><code>exo_time</code></td>
+                                <td>Numeric</td>
+                                <td>Exonuclease time with operators</td>
+                                <td>{"operator": ">=", "value": 12}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Examples Section -->
+            <section id="examples" class="doc-section">
+                <h2 class="display-5 fw-bold mb-4">
+                    <i class="fas fa-lightbulb me-3"></i>Query Examples
+                </h2>
+                
+                <div class="row">
+                    <div class="col-md-6 mb-4">
+                        <div class="card h-100">
+                            <div class="card-header bg-success text-white">
+                                <h6 class="mb-0"><i class="fas fa-search me-2"></i>Simple Filter</h6>
+                            </div>
+                            <div class="card-body">
+                                <p class="text-muted">Find all HeLa cell datasets</p>
+                                <div class="json-example">
+                                    <pre><code>{
+  "path": "/api/query",
+  "access_key": "YOUR_ACCESS_KEY",
+  "secret_key": "YOUR_SECRET_KEY",
+  "selections": {
+    "cell_type": "HeLa"
+  },
+  "files_required": ["pri_crssant"],
+  "limit": 50,
+  "include_download": false
+}</code></pre>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6 mb-4">
+                        <div class="card h-100">
+                            <div class="card-header bg-warning text-dark">
+                                <h6 class="mb-0"><i class="fas fa-filter me-2"></i>Complex Filter</h6>
+                            </div>
+                            <div class="card-body">
+                                <p class="text-muted">Find HS datasets with litigation time < 15</p>
+                                <div class="json-example">
+                                    <pre><code>{
+  "path": "/api/query",
+  "access_key": "YOUR_ACCESS_KEY",
+  "secret_key": "YOUR_SECRET_KEY",
+  "selections": {
+    "species": "HS",
+    "litigation_time": {
+      "operator": "<",
+      "value": 15
+    }
+  },
+  "files_required": ["prigap1", "prigapm"],
+  "limit": 100,
+  "include_download": false
+}</code></pre>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-6 mb-4">
+                        <div class="card h-100">
+                            <div class="card-header bg-info text-white">
+                                <h6 class="mb-0"><i class="fas fa-download me-2"></i>With Download</h6>
+                            </div>
+                            <div class="card-body">
+                                <p class="text-muted">Query with file download enabled</p>
+                                <div class="json-example">
+                                    <pre><code>{
+  "path": "/api/query",
+  "access_key": "YOUR_ACCESS_KEY",
+  "secret_key": "YOUR_SECRET_KEY",
+  "selections": {
+    "crosslinker": "DPI"
+  },
+  "files_required": ["pri_crssant", "prigap1"],
+  "limit": 25,
+  "include_download": true
+}</code></pre>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6 mb-4">
+                        <div class="card h-100">
+                            <div class="card-header bg-primary text-white">
+                                <h6 class="mb-0"><i class="fas fa-cogs me-2"></i>Multiple Criteria</h6>
+                            </div>
+                            <div class="card-body">
+                                <p class="text-muted">Complex query with multiple filters</p>
+                                <div class="json-example">
+                                    <pre><code>{
+  "path": "/api/query",
+  "access_key": "YOUR_ACCESS_KEY",
+  "secret_key": "YOUR_SECRET_KEY",
+  "selections": {
+    "species": "HS",
+    "cell_type": "HeLa",
+    "crosslinker": "DPI",
+    "exo_time": {
+      "operator": ">=",
+      "value": 12
+    }
+  },
+  "files_required": ["pri_crssant", "seglen"],
+  "limit": 10,
+  "include_download": true
+}</code></pre>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Deployment Section -->
+            <section id="deployment" class="doc-section">
+                <h2 class="display-5 fw-bold text-dark mb-4">
+                    <i class="fas fa-rocket me-3"></i>Deployment
+                </h2>
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <h5><i class="fas fa-server me-2"></i>Local Development</h5>
+                        <div class="code-block">
+# Install dependencies
+pip install -r requirements.txt
+
+# Run migrations
+python manage.py migrate
+
+# Start development server
+python manage.py runserver
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <h5><i class="fas fa-cloud me-2"></i>Production</h5>
+                        <div class="code-block">
+# Set environment variables
+export DEBUG=False
+export DJANGO_SECRET_KEY=your-secret-key
+export ALLOWED_HOSTS=your-domain.com
+
+# Collect static files
+python manage.py collectstatic
+
+# Run with Gunicorn
+gunicorn api_website.wsgi:application
+                        </div>
+                    </div>
+                </div>
+                
+                <h5 class="mt-4 mb-3"><i class="fas fa-cog me-2"></i>Environment Variables</h5>
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Variable</th>
+                                <th>Description</th>
+                                <th>Example</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><code>DEBUG</code></td>
+                                <td>Enable debug mode</td>
+                                <td>False</td>
+                            </tr>
+                            <tr>
+                                <td><code>DJANGO_SECRET_KEY</code></td>
+                                <td>Django secret key</td>
+                                <td>your-secret-key</td>
+                            </tr>
+                            <tr>
+                                <td><code>ALLOWED_HOSTS</code></td>
+                                <td>Comma-separated host list</td>
+                                <td>localhost,127.0.0.1</td>
+                            </tr>
+                            <tr>
+                                <td><code>EXTERNAL_API_URL</code></td>
+                                <td>External API endpoint</td>
+                                <td>https://lambda-url.aws</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Troubleshooting Section -->
+            <section id="troubleshooting" class="doc-section">
+                <h2 class="display-5 fw-bold text-dark mb-4">
+                    <i class="fas fa-tools me-3"></i>Troubleshooting
+                </h2>
+                
+                <div class="accordion" id="troubleshootingAccordion">
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne">
+                                <i class="fas fa-exclamation-triangle me-2 text-warning"></i>Query Returns No Results
+                            </button>
+                        </h2>
+                        <div id="collapseOne" class="accordion-collapse collapse show" data-bs-parent="#troubleshootingAccordion">
+                            <div class="accordion-body">
+                                <ul>
+                                    <li>Check if your AWS credentials are correct</li>
+                                    <li>Verify that the selected filters match available data</li>
+                                    <li>Ensure at least one file type is selected</li>
+                                    <li>Check the AWS Athena table for data availability</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo">
+                                <i class="fas fa-key me-2 text-danger"></i>Authentication Errors
+                            </button>
+                        </h2>
+                        <div id="collapseTwo" class="accordion-collapse collapse" data-bs-parent="#troubleshootingAccordion">
+                            <div class="accordion-body">
+                                <ul>
+                                    <li>Verify your AWS access key and secret key</li>
+                                    <li>Ensure your AWS user has appropriate permissions</li>
+                                    <li>Check if your credentials have expired</li>
+                                    <li>Verify the AWS region configuration</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree">
+                                <i class="fas fa-download me-2 text-info"></i>Download Issues
+                            </button>
+                        </h2>
+                        <div id="collapseThree" class="accordion-collapse collapse" data-bs-parent="#troubleshootingAccordion">
+                            <div class="accordion-body">
+                                <ul>
+                                    <li>Ensure "include_download" is set to true</li>
+                                    <li>Check if the external file download API is accessible</li>
+                                    <li>Verify S3 file paths are correct</li>
+                                    <li>Check download link expiration</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block title %}Query Results - Genomic Data Query{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="text-center mb-5">
+                <h1 class="display-4 fw-bold text-dark mb-3">
+                    <i class="fas fa-chart-bar me-3"></i>Query Results
+                </h1>
+                <p class="lead text-muted">
+                    View and analyze your genomic data query results
+                </p>
+            </div>
+
+            <div class="card shadow-lg">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">
+                        <i class="fas fa-search me-2"></i>Query Information
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted">This page displays the results of your genomic data queries.</p>
+                    <p>Use the <a href="{% url 'query_interface:query' %}" class="text-decoration-none">Query Interface</a> to perform new searches.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
