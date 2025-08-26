@@ -146,27 +146,59 @@ def handle_home_page():
     """
     Home page endpoint
     """
-    return create_response(200, {
-        'message': 'Welcome to Genomic Data Query Interface',
-        'endpoints': {
-            'query': '/api/query (POST)',
-            'health': '/api/health (GET)',
-            'home': '/ (GET)'
-        },
-        'timestamp': datetime.now().isoformat()
-    })
+    html_content = """
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Genomic Data Query Interface</title>
+        <style>
+            body { font-family: Arial, sans-serif; margin: 40px; background: #f5f5f5; }
+            .container { max-width: 800px; margin: 0 auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+            h1 { color: #2c3e50; text-align: center; }
+            .endpoint { background: #ecf0f1; padding: 15px; margin: 10px 0; border-radius: 5px; }
+            .status { color: #27ae60; font-weight: bold; }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <h1>🧬 Genomic Data Query Interface</h1>
+            <p class="status">✅ Website is LIVE and working!</p>
+            <h2>Available Endpoints:</h2>
+            <div class="endpoint">
+                <strong>Home:</strong> / (GET) - This page
+            </div>
+            <div class="endpoint">
+                <strong>Health Check:</strong> /api/health (GET) - API status
+            </div>
+            <div class="endpoint">
+                <strong>Query Data:</strong> /api/query (POST) - Submit queries
+            </div>
+            <p><em>Deployed on AWS Lambda + API Gateway</em></p>
+        </div>
+    </body>
+    </html>
+    """
+    return create_response(200, html_content, content_type="text/html")
 
-def create_response(status_code, body):
+def create_response(status_code, body, content_type="application/json"):
     """
     Create standardized API Gateway response
     """
+    # Handle different content types
+    if content_type == "text/html":
+        response_body = body
+    else:
+        response_body = json.dumps(body, default=str)
+    
     return {
         'statusCode': status_code,
         'headers': {
-            'Content-Type': 'application/json',
+            'Content-Type': content_type,
             'Access-Control-Allow-Origin': '*',
             'Access-Control-Allow-Headers': 'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token',
             'Access-Control-Allow-Methods': 'GET,POST,OPTIONS'
         },
-        'body': json.dumps(body, default=str)
+        'body': response_body
     }

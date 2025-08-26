@@ -1,0 +1,20 @@
+version: 1.0
+runtime: python3
+build:
+  commands:
+    build:
+      - echo "Building Django application..."
+      - pip install -r requirements.txt
+      - python manage.py collectstatic --noinput
+run:
+  runtime-version: 3.11
+  command: gunicorn api_website.wsgi:application --bind 0.0.0.0:8000 --workers 2
+  network:
+    port: 8000
+  env:
+    - name: DJANGO_SETTINGS_MODULE
+      value: api_website.settings
+    - name: DEBUG
+      value: "False"
+    - name: ALLOWED_HOSTS
+      value: "*"
