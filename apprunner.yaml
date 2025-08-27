@@ -3,28 +3,9 @@ runtime: python3
 build:
   commands:
     build:
-      - echo "=== BUILD START ==="
-      - echo "Current directory: $(pwd)"
-      - echo "Listing files:"
-      - ls -la
-      - echo "=== STEP 1: Check Python ==="
-      - python --version
-      - echo "=== STEP 2: Check pip ==="
-      - pip --version
-      - echo "=== STEP 3: Upgrade pip ==="
-      - pip install --upgrade pip
-      - echo "=== STEP 4: Install requirements ==="
-      - cat requirements.txt
       - pip install -r requirements.txt
-      - echo "=== STEP 5: Check Django ==="
-      - python -c "import django; print('Django version:', django.get_version())"
-      - echo "=== STEP 6: Run test script ==="
-      - python test_build.py
-      - echo "=== STEP 7: Collect static files ==="
-      - python manage.py collectstatic --noinput
-      - echo "=== BUILD COMPLETE ==="
 run:
   runtime-version: 3.11
-  command: gunicorn api_website.wsgi:application --bind 0.0.0.0:8000 --workers 2 --timeout 120
+  command: sh startup.sh
   network:
     port: 8000
