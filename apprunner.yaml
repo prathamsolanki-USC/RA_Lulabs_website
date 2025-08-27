@@ -1,17 +1,14 @@
 version: 1.0
 runtime: python311
 
-build:
-  commands:
-    build:
-      - echo "Dependencies installed in pre-run for revised build"
-
 run:
-  # You can pin to a supported patch like 3.11.13, or just use 3.11
   runtime-version: 3.11
   pre-run:
+    - python3 -V
     - pip3 install --upgrade pip
     - pip3 install -r requirements.txt
-  command: sh startup.sh
+    - python3 manage.py collectstatic --noinput
+    - python3 manage.py migrate --noinput
+  command: python3 -m gunicorn api_website.wsgi:application --bind 0.0.0.0:8000
   network:
     port: 8000
