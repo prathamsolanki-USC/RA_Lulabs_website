@@ -137,9 +137,6 @@ STATICFILES_DIRS = [
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 # App Runner specific settings - following AWS guide
-STATIC_URL = "static/"
-STATIC_ROOT = BASE_DIR / "staticfiles"
-
 STORAGES = {
     "default": {
         "BACKEND": "django.core.files.storage.FileSystemStorage",
@@ -148,10 +145,6 @@ STORAGES = {
         "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
     },
 }
-
-STATICFILES_DIRS = [
-    BASE_DIR / "static",
-]
 
 # Media files
 MEDIA_URL = 'media/'
