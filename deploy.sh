@@ -15,6 +15,21 @@ NC='\033[0m' # No Color
 
 echo -e "${GREEN}🚀 Starting deployment process...${NC}"
 
+# Check AWS credentials
+echo -e "${YELLOW}🔐 Checking AWS credentials...${NC}"
+if ! aws sts get-caller-identity &> /dev/null; then
+    echo -e "${RED}❌ AWS credentials not found or invalid!${NC}"
+    echo -e "${YELLOW}Please configure AWS credentials using one of these methods:${NC}"
+    echo -e "1. Run: aws configure"
+    echo -e "2. Set environment variables: AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY"
+    echo -e "3. Use AWS SSO or IAM roles"
+    exit 1
+fi
+
+# Get AWS account ID from credentials
+ACTUAL_ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
+echo -e "${GREEN}✅ AWS credentials valid (Account: $ACTUAL_ACCOUNT_ID)${NC}"
+
 # Step 1: Build Docker image
 echo -e "${YELLOW}📦 Building Docker image...${NC}"
 docker build -t $ECR_REPO_NAME:$IMAGE_TAG .
