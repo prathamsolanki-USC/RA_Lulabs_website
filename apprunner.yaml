@@ -1,11 +1,17 @@
 version: 1.0
-runtime: python3
+runtime: python311
+
 build:
   commands:
     build:
-      - pip install -r requirements.txt
+      - echo "Dependencies installed in pre-run for revised build"
+
 run:
-  runtime-version: 3.10
+  # You can pin to a supported patch like 3.11.13, or just use 3.11
+  runtime-version: 3.11
+  pre-run:
+    - pip3 install --upgrade pip
+    - pip3 install -r requirements.txt
   command: sh startup.sh
   network:
     port: 8000
