@@ -2,7 +2,7 @@
 
 # Set variables
 AWS_REGION="us-east-2"
-AWS_ACCOUNT_ID="288206953496"
+AWS_ACCOUNT_ID="905418023596"
 ECR_REPO_NAME="ecr_genomic_website"
 IMAGE_TAG="latest"
 SERVICE_NAME="genomic-query-website-container"
