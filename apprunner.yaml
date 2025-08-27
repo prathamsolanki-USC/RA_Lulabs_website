@@ -7,6 +7,6 @@ build:
       - pip3 install --no-cache-dir -r requirements.txt
 run:
   runtime-version: 3.8.16
-  command: python3 -m gunicorn --bind 0.0.0.0:8000 --workers 2 --access-logfile - --error-logfile - --log-level debug api_website.wsgi:application
+  command: python -m gunicorn --bind 0.0.0.0:8000 --workers 2 --access-logfile - --error-logfile - --log-level debug api_website.wsgi:application
   network:
     port: 8000
