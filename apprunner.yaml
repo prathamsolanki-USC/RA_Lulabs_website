@@ -3,11 +3,11 @@ runtime: python3
 build:
   commands:
     build:
-      - echo "Installing dependencies..."
+      - pip install --upgrade pip
       - pip install -r requirements.txt
-      - echo "Build completed successfully!"
+      - python manage.py collectstatic --noinput
 run:
   runtime-version: 3.11
-  command: gunicorn api_website.wsgi:application --bind 0.0.0.0:8000 --workers 1
+  command: gunicorn api_website.wsgi:application --bind 0.0.0.0:8000 --workers 2 --timeout 120
   network:
     port: 8000
