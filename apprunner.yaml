@@ -14,11 +14,3 @@ run:
   command: gunicorn api_website.wsgi:application --bind 0.0.0.0:8000 --timeout 120
   network:
     port: 8000
-  env:
-    - name: DJANGO_SETTINGS_MODULE
-      value: api_website.settings
-    # Set these in console/Secrets Manager if you prefer not to commit them:
-    # - name: DJANGO_SECRET_KEY
-    #   value: <your-secret>
-    # - name: DEBUG
-    #   value: "false"
