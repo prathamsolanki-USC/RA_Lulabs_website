@@ -52,6 +52,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -137,8 +138,7 @@ STATICFILES_DIRS = [
     BASE_DIR / 'static',
 ]
 
-# Add whitenoise for static file serving
-MIDDLEWARE.insert(1, 'whitenoise.middleware.WhiteNoiseMiddleware')
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 # App Runner specific settings - following AWS guide
 STATIC_URL = "static/"
@@ -153,7 +153,6 @@ STORAGES = {
     },
 }
 
-# Ensure static files are served
 STATICFILES_DIRS = [
     BASE_DIR / "static",
 ]
@@ -187,6 +186,10 @@ REST_FRAMEWORK = {
         'rest_framework.parsers.MultiPartParser',
     ],
 }
+
+CSRF_TRUSTED_ORIGINS = [
+    'https://*.awsapprunner.com',
+]
 
 # Security settings for production
 if not DEBUG:
