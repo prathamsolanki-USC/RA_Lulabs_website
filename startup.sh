@@ -1,11 +1,11 @@
-#!/bin/bash
-set -euo pipefail
+#!/bin/sh
+set -eu
 export PYTHONUNBUFFERED=1
 
 python3 manage.py migrate --noinput
 python3 manage.py collectstatic --noinput
 
-exec gunicorn \
+exec python3 -m gunicorn \
   --workers "${WEB_CONCURRENCY:-2}" \
   --bind "0.0.0.0:${PORT:-8000}" \
   --access-logfile - \
