@@ -6,7 +6,7 @@ build:
       - pip3 install --upgrade pip
       - pip3 install --no-cache-dir -r requirements.txt
 run:
-  runtime-version: 3.11
+  runtime-version: 3.8.16
   command: sh startup.sh
   network:
     port: 8000
