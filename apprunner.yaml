@@ -1,5 +1,6 @@
 version: 1.0
 runtime: python3
+
 build:
   commands:
     build:
@@ -7,6 +8,12 @@ build:
       - pip3 install --no-cache-dir -r requirements.txt
 run:
   runtime-version: 3.8.16
-  command: sh -lc "python manage.py migrate --noinput && python manage.py collectstatic --noinput && exec python -m gunicorn --bind 0.0.0.0:8000 --workers 2 --access-logfile - --error-logfile - --log-level debug api_website.wsgi:application"
+  command: sh -lc "python manage.py collectstatic --noinput && exec python -m gunicorn --bind 0.0.0.0:8000 --workers 2 --access-logfile - --error-logfile - --log-level debug api_website.wsgi:application"
   network:
     port: 8000
+  env:
+    variables:
+      DJANGO_SETTINGS_MODULE: api_website.settings
+      # Set securely in console or Secrets Manager:
+      # DJANGO_SECRET_KEY: <your-secret>
+      # DEBUG: "false"
