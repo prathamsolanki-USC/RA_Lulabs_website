@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Django App Runner Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 50px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            min-height: 100vh;
+        }
+        .container {
+            background: rgba(255,255,255,0.1);
+            padding: 40px;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        h1 { font-size: 3em; margin-bottom: 20px; }
+        p { font-size: 1.2em; margin: 15px 0; }
+        .status { 
+            background: rgba(0,255,0,0.2); 
+            padding: 15px; 
+            border-radius: 10px; 
+            margin: 20px 0;
+        }
+        .features {
+            text-align: left;
+            margin: 20px 0;
+        }
+        .features li {
+            margin: 10px 0;
+            padding: 10px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 Django App Runner Test</h1>
+        
+        <div class="status">
+            <p><strong>✅ SUCCESS!</strong></p>
+            <p>If you can see this page, Django is working on AWS App Runner!</p>
+        </div>
+        
+        <h2>What's Working:</h2>
+        <ul class="features">
+            <li>✅ Python 3.11</li>
+            <li>✅ Django 4.2.7</li>
+            <li>✅ Gunicorn WSGI Server</li>
+            <li>✅ Static Files (WhiteNoise)</li>
+            <li>✅ Database Migrations</li>
+            <li>✅ AWS App Runner Deployment</li>
+        </ul>
+        
+        <p><strong>Deployment Status: SUCCESSFUL! 🎉</strong></p>
+        <p>Your Django website is now running on AWS App Runner!</p>
+    </div>
+</body>
+</html>

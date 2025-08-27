@@ -1,0 +1,16 @@
+version: 1.0
+runtime: python3
+build:
+  commands:
+    build:
+      - echo "=== DJANGO BUILD START ==="
+      - python --version
+      - pip --version
+      - pip install --upgrade pip
+      - pip install -r requirements.txt
+      - echo "=== DJANGO BUILD COMPLETE ==="
+run:
+  runtime-version: 3.11
+  command: sh startup_django.sh
+  network:
+    port: 8000
