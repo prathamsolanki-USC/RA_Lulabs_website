@@ -1,5 +1,5 @@
 version: 1.0
-runtime: python3
+runtime: python311
 
 build:
   commands:
@@ -10,7 +10,7 @@ build:
       - python3 manage.py collectstatic --noinput
 
 run:
-  runtime-version: 3.11.8
+  runtime-version: 3.11
   command: ./startup.sh
   network:
     port: 8000
