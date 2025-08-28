@@ -1,18 +1,26 @@
-#!/bin/sh
-set -eu
+#!/bin/bash
+
+# Startup script for App Runner
+echo "Starting Django application with Python 3.11..."
+
+# Ensure proper Python environment
 export PYTHONUNBUFFERED=1
+export PYTHONDONTWRITEBYTECODE=1
 
-echo "Starting Django startup sequence..."
+# Collect static files
+echo "Collecting static files..."
+python3 manage.py collectstatic --noinput
 
-# Skip migrations for now to isolate startup issues
-# python3 manage.py migrate --noinput
-# python3 manage.py collectstatic --noinput
+# Run database migrations if needed
+echo "Running database migrations..."
+python3 manage.py migrate --noinput
 
-echo "Starting Gunicorn..."
-exec python3 -m gunicorn \
-  --workers "${WEB_CONCURRENCY:-2}" \
-  --bind "0.0.0.0:${PORT:-8000}" \
-  --access-logfile - \
-  --error-logfile - \
-  --log-level debug \
-  api_website.wsgi:application
+# Start the application
+echo "Starting Gunicorn server..."
+exec gunicorn api_website.wsgi:application \
+    --bind 0.0.0.0:8000 \
+    --timeout 120 \
+    --workers 2 \
+    --access-logfile - \
+    --error-logfile - \
+    --log-level info

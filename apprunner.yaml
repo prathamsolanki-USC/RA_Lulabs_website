@@ -10,7 +10,14 @@ build:
       - python3 manage.py collectstatic --noinput
 
 run:
-  runtime-version: 3.8.16
-  command: gunicorn api_website.wsgi:application --bind 0.0.0.0:8000 --timeout 120
+  runtime-version: 3.11
+  command: ./startup.sh
   network:
     port: 8000
+  health-check:
+    protocol: TCP
+    path: /
+    interval: 5
+    timeout: 2
+    healthy-threshold: 3
+    unhealthy-threshold: 3
