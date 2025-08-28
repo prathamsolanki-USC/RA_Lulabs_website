@@ -9,11 +9,11 @@ export PYTHONDONTWRITEBYTECODE=1
 
 # Collect static files
 echo "Collecting static files..."
-python manage.py collectstatic --noinput
+python3 manage.py collectstatic --noinput
 
 # Run database migrations if needed
 echo "Running database migrations..."
-python manage.py migrate --noinput
+python3 manage.py migrate --noinput
 
 # Start the application
 echo "Starting Gunicorn server..."
