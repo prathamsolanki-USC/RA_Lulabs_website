@@ -10,7 +10,7 @@ build:
       - python3 manage.py collectstatic --noinput
 
 run:
-  runtime-version: 3.11
+  runtime-version: 3.11.8
   command: ./startup.sh
   network:
     port: 8000
